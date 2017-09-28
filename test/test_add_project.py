@@ -3,7 +3,6 @@ from test.helper import random_string, random_status
 
 
 def test_add_project(app):
-    app.session.login("administrator", "root")
     old_projects = app.project.get_project_list()
 
     new_project = Project(name=random_string("qwerty", 10), status=random_status(), description="blablabla")

@@ -1,5 +1,10 @@
 from model.project import Project
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+
 
 class ProjectHelper:
 
@@ -44,6 +49,7 @@ class ProjectHelper:
             for element in wd.find_elements_by_xpath("//div[@class='table-responsive' and position()=2]/table/tbody/tr"):
                 cells = element.find_elements_by_tag_name("td")
                 a_name = cells[0].find_element_by_tag_name("a")
+                project_id = a_name.get_attribute('href').split("=")[1]
                 name = a_name.text
                 status = cells[1].text
                 description = cells[4].text
@@ -54,5 +60,30 @@ class ProjectHelper:
                 except NoSuchElementException:
                     enabled = False
 
-                self.project_cache.append(Project(name=name, status=status, enabled=enabled, description=description))
+                self.project_cache.append(Project(name=name, status=status, enabled=enabled, description=description, project_id=project_id))
         return list(self.project_cache)
+
+    def delete_project_by_id(self, id):
+        wd = self.app.wd
+        self.open_edit_page(id)
+        wd.find_element_by_xpath("//input[@value='Delete Project'][@type='submit']").click()
+        # переходим на страницу подтверждения удаления проекта
+        delay = 3
+        try:
+            del_elem = WebDriverWait(wd, delay).until(EC.presence_of_element_located((By.XPATH, "//input[@value='Delete Project'][@type='submit']")))
+            del_elem.click()
+        except TimeoutException:
+            print ("can't open confirmation page")
+        self.project_cache = None
+
+
+    def open_edit_page(self, id):
+        wd = self.app.wd
+        wd.get(self.app.base_url + "manage_proj_edit_page.php?project_id=" + str(id))
+
+
+    def count(self):
+        wd = self.app.wd
+        self.open_project_page()
+        return len(wd.find_elements_by_xpath("//div[@class='table-responsive' and position()=2]/table/tbody/tr"))
+
