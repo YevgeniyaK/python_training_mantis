@@ -3,6 +3,20 @@
     "baseUrl": "http://localhost/mantisbt-2.6.0/",
     "username": "administrator",
     "password": "root"
+  },
+  "ftp": {
+    "host": "localhost",
+    "username": "mantis",
+    "password": "mantis"
+  },
+  "james": {
+    "host": "localhost",
+    "port": "4555",
+    "username": "root",
+    "password": "root"
+  },
+  "soap": {
+    "url": "http://localhost/mantisbt-2.6.0/api/soap/mantisconnect.php?wsdl"
   }
 
 }
